@@ -1,0 +1,9 @@
+*.vscode
+*.swp
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.o
+*.exe
+*.so
