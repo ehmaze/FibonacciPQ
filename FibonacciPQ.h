@@ -3,6 +3,7 @@
 #include <functional>
 #include <cstdint>
 #include <cmath>
+#include <vector>
 #include <exception>
 
 #define PHI 1.61803398875
@@ -102,17 +103,21 @@ private:
   Node* extract_minimum_elt() {
     Node* temp = min->child;
     if (temp) {
+      std::vector<Node*> children;
       do {
-        temp->right->left = temp->left;
-        temp->left->right = temp->right;
-        temp->left = min->left;
-        min->left->right = temp;
-        min->left = temp;
-        temp->right = min;
-        temp->parent = nullptr;
+        children.push_back(temp);
         temp = temp->right;
-      } while (temp != min->child); //while, make parent null
-    }//if
+      } while (temp != min->child);// while, initializee children 
+      for (std::size_t i = 0; i < children.size(); i++) {
+        children[i]->right->left = children[i]->left;
+        children[i]->left->right = children[i]->right;
+        min->left->right = children[i];
+        children[i]->left = min->left;
+        children[i]->right = min;
+        min->left = children[i];
+        children[i]->parent = nullptr;
+      }//for, add children to root list
+    }//if min has children
     temp = min;
     temp->left->right = temp->right;
     temp->right->left = temp->left;
@@ -130,14 +135,16 @@ private:
   //Consolidate tree after removing min element
   void consolidate() {
     int arr_size = (int)std::ceil(std::log(siz)/std::log(PHI)) + 1;
-    Node** arr = new Node*[arr_size];
-    for (int i = 0; i < arr_size; i++) {
-      arr[i] = nullptr;
-    }//for, initialize
+    std::vector<Node*> arr(arr_size, nullptr);
+    std::vector<Node*> root_list;
     Comp comp;
     Node* temp = min;
     do {
-      Node* x = temp;
+      root_list.push_back(temp);
+      temp = temp->right;
+    } while (temp != min); // fill root list vector
+    for (std::size_t i = 0; i < root_list.size(); i++) {
+      Node* x = root_list[i];
       int deg = x->degree;
       while (arr[deg]) {
         Node* y = arr[deg];
@@ -151,8 +158,7 @@ private:
         deg++;
       }//while (arr[deg])
       arr[deg] = x;
-      temp = temp->right;
-    } while (temp != min); //for each node in root list
+    }//for each node in root list
     min = nullptr;
     for (int i = 0; i < arr_size; i++) {
       if (arr[i] && !min) {
@@ -179,9 +185,19 @@ private:
   void heap_link(Node* y, Node* x) {
     y->left->right = y->right;
     y->right->left = y->left;
+    if (x->child) {
+      y->right = x->child;
+      y->left = x->child->left;
+      x->child->left->right = y;
+      x->child->left = y;
+    }
+    else {
+      y->right = y;
+      y->left = y;
+    }
     x->child = y;
     y->parent = x;
-    x->degree++;
+    x->degree += (y->degree + 1);
     y->mark = false;
   }//heap_link
 

@@ -27,5 +27,14 @@ int main() {
   pq.pop_top();
   assert(pq.top() == 6);
   cout << "Pass\n";
+  pq.push(2);
+  assert(pq.top() == 2);
+  cout << "Pass\n";
+  pq.pop_top();
+  assert(pq.top() == 6);
+  cout << "Pass\n";
+  pq.pop_top();
+  assert(pq.top() == 10);
+  cout << "Pass\n";
   return 0;
 }
