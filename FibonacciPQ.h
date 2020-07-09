@@ -52,7 +52,9 @@ public:
   }//Assignment
 
   ~FibonacciPQ() {
-    //TODO
+    while (!empty()) {
+      pop_top();
+    }
   }//Destructor
 
   const std::size_t size() const {
