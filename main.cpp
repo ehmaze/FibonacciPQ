@@ -11,21 +11,17 @@ using namespace std;
 
 int main() {
   FibonacciPQ<unsigned int> test;
-  priority_queue<unsigned int, vector<unsigned int>, greater<unsigned int> > real;
-  random_device rand;
-  for (size_t i = 0; i < 100; i++) {
-    unsigned int rd = rand() % 200;
+  priority_queue<unsigned int, vector<unsigned int>, greater<unsigned int>> real;
+  random_device r;
+  for (int i = 0; i < 5000; ++i) {
+    unsigned int rd = r();
     test.push(rd);
     real.push(rd);
-    if (i > 0 && i % 5 == 0) {
-      test.pop_top();
+    if (rd % 4 == 0) {
+      test.pop();
       real.pop();
-      unsigned int a = test.top(), b = real.top();
-      if (a != b) {
-        cout << "ERROR\n";
-      } // if different
-    } //pop, compare
-  } //for
-  cout << "PASS\n";
-  return 0;
+    }
+    if (test.size() > 0) assert(test.top() == real.top());
+  }
+  cout << "Pass\n";
 }

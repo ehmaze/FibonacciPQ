@@ -8,7 +8,7 @@
 
 #define PHI 1.61803398875
 
-template<typename T, typename Comp = std::less<T>>
+template<typename T, typename Comp = std::greater<T>>
 class FibonacciPQ {
 public:
   class Node {
@@ -84,7 +84,7 @@ public:
       min->left->right = n;
       min->left = n;
       Comp comp;
-      if (comp(n->datum, min->datum)) {
+      if (comp(min->datum, n->datum)) {
         min = n;
       }//check if min
     } //Add to root list;
@@ -92,7 +92,7 @@ public:
     return n;
   }//push
 
-  void pop_top() {
+  void pop() {
     if (empty()) {
       throw std::bad_function_call();
     }//throw expection popping into empty heap
@@ -136,9 +136,8 @@ private:
 
   //Consolidate tree after removing min element
   void consolidate() {
-    int arr_size = (int)std::ceil(std::log(siz)/std::log(PHI)) + 1;
-    std::vector<Node*> arr(arr_size, nullptr);
     std::vector<Node*> root_list;
+    std::vector<Node*> arr(siz, nullptr);
     Comp comp;
     Node* temp = min;
     do {
@@ -150,7 +149,7 @@ private:
       int deg = x->degree;
       while (arr[deg]) {
         Node* y = arr[deg];
-        if (comp(y->datum, x->datum)) {
+        if (comp(x->datum, y->datum)) {
             Node *temp1 = x;
             x = y;
             y = temp1;
@@ -162,7 +161,7 @@ private:
       arr[deg] = x;
     }//for each node in root list
     min = nullptr;
-    for (int i = 0; i < arr_size; i++) {
+    for (int i = 0; i < siz; i++) {
       if (arr[i] && !min) {
         arr[i]->right->left = arr[i]->left;
         arr[i]->left->right = arr[i]->right;
@@ -177,7 +176,7 @@ private:
         min->left->right = arr[i];
         min->left = arr[i];
         arr[i]->right = min;
-        if (comp(arr[i]->datum, min->datum)) {
+        if (comp(min->datum, arr[i]->datum)) {
           min = arr[i];
         }//if new min
       }//add to root list
