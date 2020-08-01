@@ -53,7 +53,7 @@ public:
 
   ~FibonacciPQ() {
     while (!empty()) {
-      pop_top();
+      pop();
     }
   }//Destructor
 
@@ -97,10 +97,25 @@ public:
       throw std::bad_function_call();
     }//throw expection popping into empty heap
     delete extract_minimum_elt();
-  }
+  }//pop
+
+  void decrease_key(Node* x, const T& key) {
+    Comp comp;
+    if (comp(key, x->datum)) {
+      throw std::bad_function_call();
+    }//if not a decrease
+    x->datum = key;
+    Node *y = x->parent;
+    if (y && comp(y->datum, x->datum)) {
+      cut(x, y);
+      cascading_cut(y);
+    } // if need to change
+    if (comp(min->datum, key)) {
+      min = x;
+    }//if min
+  } //decrease_key
 
 private:
-
   //Returns min node, maintaining heap property
   Node* extract_minimum_elt() {
     Node* temp = min->child;
@@ -202,6 +217,34 @@ private:
     y->mark = false;
   }//heap_link
 
+  void cut (Node* x, Node* y) {
+    if (x->right = x) {
+      y->child = nullptr;
+    }//if y only has one child
+    else {
+      y->child = x->right;
+      x->left->right = x->right;
+      x->right->left = x->left;
+    } //remove from child list
+    y->degree -= (1 + x->degree);
+    x->parent = nullptr;
+    x->right = min;
+    x->left = min->left;
+    min->left->right = x;
+    min->left = x;
+    x->mark = false;
+  }//cut
+
+  void cascading_cut(Node *y) {
+    Node* z = y->parent;
+    if (z && !y->mark) {
+      y->mark = true;
+    } //if y->mark is false
+    else if (z) {
+      cut(y, z);
+      cascading_cut(z);
+    } //else if
+  }//cascading cut
   Node* min;
   std::size_t siz;
 };
