@@ -2,11 +2,8 @@
 
 #include <functional>
 #include <cstdint>
-#include <cmath>
 #include <vector>
 #include <exception>
-
-#define PHI 1.61803398875
 
 template<typename T, typename Comp = std::greater<T>>
 class FibonacciPQ {
@@ -176,7 +173,7 @@ private:
       arr[deg] = x;
     }//for each node in root list
     min = nullptr;
-    for (int i = 0; i < siz; i++) {
+    for (std::size_t i = 0; i < siz; i++) {
       if (arr[i] && !min) {
         arr[i]->right->left = arr[i]->left;
         arr[i]->left->right = arr[i]->right;
@@ -217,8 +214,8 @@ private:
     y->mark = false;
   }//heap_link
 
-  void cut (Node* x, Node* y) {
-    if (x->right = x) {
+  void cut(Node* x, Node* y) {
+    if (x->right == x) {
       y->child = nullptr;
     }//if y only has one child
     else {
@@ -245,6 +242,7 @@ private:
       cascading_cut(z);
     } //else if
   }//cascading cut
+
   Node* min;
   std::size_t siz;
 };
