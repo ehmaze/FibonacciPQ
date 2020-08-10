@@ -49,9 +49,7 @@ public:
   }//Assignment
 
   ~FibonacciPQ() {
-    while (!empty()) {
-      pop();
-    }
+    delete_nodes(min);
   }//Destructor
 
   const std::size_t size() const {
@@ -242,6 +240,16 @@ private:
       cascading_cut(z);
     } //else if
   }//cascading cut
+
+  void delete_nodes(Node* victim) {
+    if (!victim) return;
+    Node* next = victim->right;
+    Node* other = victim->child;
+    delete victim;
+    victim = nullptr;
+    delete_nodes(next);
+    delete_nodes(other);
+  }//delete nodes
 
   Node* min;
   std::size_t siz;
